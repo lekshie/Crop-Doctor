@@ -1,0 +1,28 @@
+{
+"name": "Leaf Disease Scanner",
+"short_name": "Leaf Scanner",
+"description": "Identify plant diseases using AI analysis.",
+"start_url": "./",
+"display": "standalone",
+"orientation": "portrait",
+"background_color": "#f7fee7",
+"theme_color": "#365314",
+"icons": [
+{
+"src": "/icons/leaf-icon-192.png",
+"sizes": "192x192",
+"type": "image/png"
+},
+{
+"src": "/icons/leaf-icon-512.png",
+"sizes": "512x512",
+"type": "image/png"
+},
+{
+"src": "/icons/leaf-icon-maskable-512.png",
+"sizes": "512x512",
+"type": "image/png",
+"purpose": "maskable"
+}
+]
+}
