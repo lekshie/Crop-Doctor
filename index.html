@@ -29,8 +29,8 @@
 
         <!-- Header -->
         <header class="text-center mb-8">
-            <h1 class="text-3xl sm:text-4xl font-extrabold text-green-800">🌿 Leaf Disease Scanner</h1>
-            <p class="text-lg text-green-600 mt-2">Identify plant diseases using AI analysis.</p>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-green-800">🌿 Leaf Disease Scanner (Live)</h1>
+            <p class="text-lg text-green-600 mt-2">Use your camera for instant plant diagnosis.</p>
         </header>
 
         <!-- Main Content Grid -->
@@ -38,16 +38,18 @@
 
             <!-- Input Column (Left) -->
             <div class="space-y-6">
-                <h2 class="text-xl font-semibold text-green-700 border-b pb-2">1. Upload Leaf Image</h2>
+                <h2 class="text-xl font-semibold text-green-700 border-b pb-2">1. Capture or Upload Image</h2>
 
-                <!-- File Input -->
+                <!-- File Input (Now Camera-Focused) -->
                 <div class="relative border-2 border-dashed border-green-300 rounded-lg p-6 hover:border-green-500 transition-colors cursor-pointer">
-                    <input type="file" id="leafFileInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="previewImage(event)">
+                    <!-- Added capture="environment" to launch the back camera directly -->
+                    <input type="file" id="leafFileInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="previewImage(event)" capture="environment">
                     <div class="text-center">
                         <svg class="mx-auto h-12 w-12 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 18m-4-2h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.218A2 2 0 0110.69 4h2.62a2 2 0 011.664.89l.812 1.218A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
-                        <p class="mt-2 text-sm text-green-600"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                        <p class="mt-2 text-sm text-green-600"><span class="font-semibold">Tap to launch camera</span> or browse files</p>
                         <p class="text-xs text-green-500">PNG, JPG, up to 4MB</p>
                     </div>
                 </div>
@@ -136,6 +138,7 @@
         
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
+                // IMPORTANT: The service worker file must be deployed at the root for this to work correctly.
                 navigator.serviceWorker.register('/service-worker.js')
                     .then(registration => {
                         console.log('ServiceWorker registration successful with scope: ', registration.scope);
@@ -144,87 +147,6 @@
                     });
             });
         }
-
-        /* // --- Content for manifest.json (required for PWA installation) ---
-        // This JSON should be saved as 'manifest.json' and deployed at your server root.
-        {
-          "name": "Leaf Disease Scanner",
-          "short_name": "Leaf Scanner",
-          "description": "Identify plant diseases using AI analysis.",
-          "start_url": "./",
-          "display": "standalone",
-          "background_color": "#f7fee7",
-          "theme_color": "#365314",
-          "icons": [
-            {
-              "src": "leaf-icon-192.png", // Replace with actual icon paths
-              "sizes": "192x192",
-              "type": "image/png"
-            },
-            {
-              "src": "leaf-icon-512.png", // Replace with actual icon paths
-              "sizes": "512x512",
-              "type": "image/png"
-            }
-          ]
-        }
-        
-        // --- Content for service-worker.js (required for offline support) ---
-        // This JavaScript should be saved as 'service-worker.js' and deployed at your server root.
-        
-        const CACHE_NAME = 'leaf-scanner-cache-v1';
-        const urlsToCache = [
-            './', // Caches the main index.html file
-            'https://cdn.tailwindcss.com',
-            'https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap',
-            // Add paths to your icons (e.g., 'leaf-icon-192.png')
-            // Note: Firebase JS and API calls are typically NOT cached
-        ];
-
-        self.addEventListener('install', event => {
-            // Perform install steps
-            event.waitUntil(
-                caches.open(CACHE_NAME)
-                    .then(cache => {
-                        console.log('Opened cache');
-                        return cache.addAll(urlsToCache);
-                    })
-            );
-        });
-
-        self.addEventListener('fetch', event => {
-            event.respondWith(
-                caches.match(event.request)
-                    .then(response => {
-                        // Cache hit - return response
-                        if (response) {
-                            return response;
-                        }
-                        // Important: clone the request. A request is a stream and can only be consumed once.
-                        const fetchRequest = event.request.clone();
-
-                        return fetch(fetchRequest).then(
-                            response => {
-                                // Check if we received a valid response
-                                if(!response || response.status !== 200 || response.type !== 'basic') {
-                                    return response;
-                                }
-
-                                // Important: clone the response. A response is a stream and can only be consumed once.
-                                const responseToCache = response.clone();
-
-                                caches.open(CACHE_NAME)
-                                    .then(cache => {
-                                        cache.put(event.request, responseToCache);
-                                    });
-
-                                return response;
-                            }
-                        );
-                    })
-            );
-        });
-        */
 
 
         // --- Utility Functions ---
@@ -258,7 +180,7 @@
         const makeApiCall = async (url, payload, retries = 3, delay = 1000) => {
             for (let i = 0; i < retries; i++) {
                 try {
-                    const response = await fetch(url, {
+                    const response = await fetch(url + `?key=${apiKey}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
@@ -469,7 +391,7 @@
             const file = fileInput.files[0];
 
             if (!file) {
-                document.getElementById('errorText').textContent = "Please select an image file first.";
+                document.getElementById('errorText').textContent = "Please capture or select an image file first.";
                 document.getElementById('errorMessage').classList.remove('hidden');
                 return;
             }
@@ -526,7 +448,7 @@
                     },
                 };
 
-                const result = await makeApiCall(API_URL + `?key=${apiKey}`, payload);
+                const result = await makeApiCall(API_URL, payload);
 
                 // Safely parse the JSON string result
                 const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
