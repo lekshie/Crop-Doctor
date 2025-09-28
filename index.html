@@ -47,8 +47,8 @@
 
         <!-- Header -->
         <header class="text-center mb-6 pt-4 sm:pt-0">
-            <h1 class="text-3xl sm:text-4xl font-extrabold text-green-800">🌿AI Crop Doctor</h1>
-            <p class="text-lg text-green-600 mt-1">Capture a leaf for instant diagnosis. hindi ko to binili guys!! (lexy)</p>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-green-800">🌿 AI Crop Doctor</h1>
+            <p class="text-lg text-green-600 mt-1">Capture a leaf for instant diagnosis.</p>
         </header>
 
         <!-- Main Content Grid -->
@@ -108,7 +108,7 @@
                     <!-- Error Message -->
                     <div id="errorMessage" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl relative">
                         <strong class="font-bold">Error!</strong>
-                        <span class="block sm:inline" id="errorText">Something went wrong.</span>
+                        <span class="block sm:inline" id="errorText">Analysis failed.</span>
                     </div>
                 </div>
 
@@ -124,7 +124,7 @@
         </div>
         
         <footer class="text-center text-xs text-gray-400 mt-8 mb-4">
-            Powered by LEXY AI for image analysis.(blehhhh)
+            Powered by LEXY for image analysis. BLEHHHH!!!
         </footer>
     </div>
 
@@ -198,6 +198,7 @@
          */
         const makeApiCall = async (url, payload, retries = 3, delay = 1000) => {
             // FIX FOR 403 ERROR: Mandated pattern for Canvas API key injection.
+            // This ensures the Canvas environment can provide the key if apiKey is empty.
             const fetchUrl = url + `?key=${apiKey}`; 
             
             for (let i = 0; i < retries; i++) {
@@ -207,6 +208,11 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     });
+
+                    if (response.status === 403) {
+                         // Explicitly check for 403 and provide an accurate error message
+                        throw new Error("403 Permission Denied. This means the API key is invalid or unauthorized by the environment. The issue is external to the application code.");
+                    }
 
                     if (response.status === 429 && i < retries - 1) {
                         // Too Many Requests, retry with backoff
@@ -491,7 +497,7 @@
             } catch (error) {
                 console.error("Leaf scanning failed:", error);
                 // Display user-friendly error
-                document.getElementById('errorText').textContent = `Analysis failed: ${error.message.includes('403') ? 'Permission Denied (API Key Issue)' : error.message}. Please try a different image.`;
+                document.getElementById('errorText').textContent = error.message;
                 document.getElementById('errorMessage').classList.remove('hidden');
             } finally {
                 setLoadingState(false);
