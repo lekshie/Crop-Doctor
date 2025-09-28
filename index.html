@@ -37,6 +37,17 @@
             /* Fallback for better desktop presentation */
             min-height: 90vh; 
         }
+        /* Custom scrollbar for history container */
+        #historyContainer::-webkit-scrollbar {
+            width: 6px;
+        }
+        #historyContainer::-webkit-scrollbar-thumb {
+            background-color: #d1fae5; /* Light green thumb */
+            border-radius: 3px;
+        }
+        #historyContainer::-webkit-scrollbar-track {
+            background: transparent;
+        }
     </style>
 </head>
 <!-- h-screen and p-0 on mobile for edge-to-edge feel -->
@@ -198,8 +209,8 @@
          * @returns {Promise<Object>} - The JSON response body.
          */
         const makeApiCall = async (url, payload, retries = 3, delay = 1000) => {
-            // FIX FOR 403 ERROR: Mandated pattern for Canvas API key injection.
-            // This ensures the Canvas environment can provide the key if apiKey is empty.
+            // CRITICAL FIX CHECK: Ensure API key is correctly appended for the Canvas environment.
+            // The canvas runtime will automatically provide the key if the local apiKey variable is empty ("").
             const fetchUrl = url + `?key=${apiKey}`; 
             
             for (let i = 0; i < retries; i++) {
@@ -562,7 +573,8 @@
                 }
 
                 // Set global userId and display it
-                userId = auth.currentUser?.uid || crypto.randomUUID(); // Use randomUUID if no auth
+                // We use crypto.randomUUID() only if auth.currentUser?.uid is null AND __initial_auth_token was not provided.
+                userId = auth.currentUser?.uid || (initialAuthToken ? 'anonymous-auth-fail' : crypto.randomUUID());
                 document.getElementById('userIdDisplay').textContent = `User ID: ${userId}`;
                 console.log("Firebase initialized. App ID:", appId, "User ID:", userId);
                 
