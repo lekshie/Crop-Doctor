@@ -6,7 +6,7 @@
     <title>AI Crop Doctor</title>
     
     <!-- --- PWA MANIFEST AND THEME CONFIGURATION --- -->
-    <link rel="manifest" href="manifest.json"> <!-- Typically deployed separately -->
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#365314">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -21,25 +21,34 @@
             font-family: 'Inter', sans-serif;
             background-color: #f7fee7; /* Light green background */
         }
-        /* Ensures the app looks and feels edge-to-edge on mobile devices */
+        /* Ensures the app looks and feels edge-to-edge on mobile */
         @media (max-width: 640px) {
             #app-container {
                 box-shadow: none !important;
                 border-radius: 0 !important;
+                padding: 0.5rem !important; /* Reduced padding on mobile */
             }
+            .h-full-screen {
+                min-height: 100vh;
+                height: 100vh;
+            }
+        }
+        .h-full-screen {
+             /* Fallback for better desktop presentation */
+             min-height: 90vh; 
         }
     </style>
 </head>
 <!-- h-screen and p-0 on mobile for edge-to-edge feel -->
-<body class="h-screen flex items-center justify-center bg-f7fee7 p-0 sm:p-8">
+<body class="h-full-screen flex items-center justify-center bg-f7fee7 p-2 sm:p-8">
 
     <!-- h-full ensures it fills the viewport vertically on small screens -->
-    <div id="app-container" class="w-full h-full max-w-5xl bg-white shadow-none sm:shadow-2xl sm:rounded-xl p-4 sm:p-10 transition-all duration-300">
+    <div id="app-container" class="w-full h-full-screen max-w-5xl bg-white shadow-none sm:shadow-2xl sm:rounded-xl p-4 sm:p-10 transition-all duration-300 overflow-y-auto">
 
         <!-- Header -->
-        <header class="text-center mb-8">
+        <header class="text-center mb-6 pt-4 sm:pt-0">
             <h1 class="text-3xl sm:text-4xl font-extrabold text-green-800">🌿AI Crop Doctor</h1>
-            <p class="text-lg text-green-600 mt-2">Use your camera for instant plant diagnosis. [hindi ko to binili(lexy)]</p>
+            <p class="text-lg text-green-600 mt-1">Capture a leaf for instant diagnosis. hindi ko to binili guys!! (lexy)</p>
         </header>
 
         <!-- Main Content Grid -->
@@ -50,22 +59,22 @@
                 <h2 class="text-xl font-semibold text-green-700 border-b pb-2">1. Capture or Upload Image</h2>
 
                 <!-- File Input (Now Camera-Focused) -->
-                <div class="relative border-2 border-dashed border-green-300 rounded-lg p-6 hover:border-green-500 transition-colors cursor-pointer">
+                <div class="relative border-2 border-dashed border-green-400 rounded-xl p-6 hover:border-green-600 transition-colors cursor-pointer bg-green-50/50">
                     <!-- Added capture="environment" to launch the back camera directly -->
                     <input type="file" id="leafFileInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="previewImage(event)" capture="environment">
                     <div class="text-center">
-                        <svg class="mx-auto h-12 w-12 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg class="mx-auto h-12 w-12 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.218A2 2 0 0110.69 4h2.62a2 2 0 011.664.89l.812 1.218A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
-                        <p class="mt-2 text-sm text-green-600"><span class="font-semibold">Tap to launch camera</span> or browse files</p>
+                        <p class="mt-2 text-sm text-green-700"><span class="font-bold">Tap to launch camera</span> or browse files</p>
                         <p class="text-xs text-green-500">PNG, JPG, up to 4MB</p>
                     </div>
                 </div>
 
                 <!-- Image Preview -->
-                <div class="mt-4 border border-green-200 rounded-lg overflow-hidden bg-green-50 p-4">
-                    <h3 class="text-lg font-medium text-green-700 mb-3">Image Preview:</h3>
+                <div class="mt-4 border border-green-300 rounded-xl overflow-hidden bg-green-50 p-4 shadow-inner">
+                    <h3 class="text-lg font-medium text-green-800 mb-3">Image Preview:</h3>
                     <img id="imagePreview" src="https://placehold.co/600x400/bbf7d0/16a34a?text=Upload+a+Leaf" alt="Leaf Preview" class="w-full h-48 object-cover rounded-lg shadow-md transition-opacity duration-500 opacity-100">
                     <p id="fileNameDisplay" class="text-sm mt-2 text-center text-green-600 italic">No file selected.</p>
                 </div>
@@ -89,7 +98,7 @@
                     <h2 class="text-xl font-semibold text-green-700 border-b pb-2">2. Diagnosis & Treatment</h2>
 
                     <!-- Result Display Area -->
-                    <div id="resultContainer" class="min-h-56 bg-green-50 border border-green-200 rounded-xl p-4 sm:p-6 shadow-inner">
+                    <div id="resultContainer" class="min-h-56 bg-white border border-green-200 rounded-xl p-4 sm:p-6 shadow-md">
                         <p id="initialMessage" class="text-center text-green-500 mt-4">
                             Results will appear here after analysis. Upload an image to start.
                         </p>
@@ -113,6 +122,10 @@
                 </div>
             </div>
         </div>
+        
+        <footer class="text-center text-xs text-gray-400 mt-8 mb-4">
+            Powered by Gemini AI for image analysis.
+        </footer>
     </div>
 
     <script type="module">
@@ -138,17 +151,14 @@
 
         // Global API configuration
         const API_MODEL = "gemini-2.5-flash-preview-05-20";
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${API_MODEL}:generateContent`;
+        const API_BASE_URL = `https://generativelanguage.googleapis.com/v1beta/models/${API_MODEL}:generateContent`;
         const apiKey = ""; // Canvas environment provides this if empty
 
         // --- PWA Service Worker Registration ---
-        // For the app to be truly installable and work offline, 
-        // a separate 'service-worker.js' file must be deployed at the root.
-        
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                // IMPORTANT: The service worker file must be deployed at the root for this to work correctly.
-                navigator.serviceWorker.register('/service-worker.js')
+                // IMPORTANT: This registers the service_worker.js file.
+                navigator.serviceWorker.register('/service_worker.js')
                     .then(registration => {
                         console.log('ServiceWorker registration successful with scope: ', registration.scope);
                     }, err => {
@@ -180,19 +190,18 @@
 
         /**
          * Generic function to make a fetch request with exponential backoff.
-         * @param {string} url - The API endpoint URL.
+         * @param {string} url - The base API endpoint URL (without key).
          * @param {Object} payload - The request body payload.
          * @param {number} retries - Max number of retries.
          * @param {number} delay - Initial delay in milliseconds.
          * @returns {Promise<Object>} - The JSON response body.
          */
         const makeApiCall = async (url, payload, retries = 3, delay = 1000) => {
+            // FIX FOR 403 ERROR: Mandated pattern for Canvas API key injection.
+            const fetchUrl = url + `?key=${apiKey}`; 
+            
             for (let i = 0; i < retries; i++) {
                 try {
-                    // FIX: If apiKey is empty (as expected in Canvas), just use the base URL.
-                    // The Canvas environment automatically handles API key injection for the base URL.
-                    const fetchUrl = apiKey ? `${url}?key=${apiKey}` : url; 
-                    
                     const response = await fetch(fetchUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -208,6 +217,7 @@
 
                     if (!response.ok) {
                         const errorBody = await response.text();
+                        // Throw the error with the exact status and message from the API
                         throw new Error(`API request failed with status ${response.status}: ${errorBody}`);
                     }
 
@@ -215,6 +225,7 @@
 
                 } catch (error) {
                     if (i === retries - 1) {
+                        // If all retries fail, throw the error
                         throw new Error(`API call failed after ${retries} attempts: ${error.message}`);
                     }
                     // Wait before retrying
@@ -343,7 +354,7 @@
             const historyHtml = scans.map((scan) => {
                 const isHealthy = scan.diagnosis.toLowerCase().includes('healthy');
                 const bgColor = isHealthy ? 'bg-green-50' : 'bg-red-50';
-                const borderColor = isHealthy ? 'border-green-300' : 'border-red-300';
+                const borderColor = isHealthy ? 'border-green-400' : 'border-red-400';
                 const icon = isHealthy ? '✅' : '🚨';
                 
                 // Format timestamp
@@ -461,7 +472,7 @@
                     },
                 };
 
-                const result = await makeApiCall(API_URL, payload);
+                const result = await makeApiCall(API_BASE_URL, payload);
 
                 // Safely parse the JSON string result
                 const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -479,7 +490,8 @@
 
             } catch (error) {
                 console.error("Leaf scanning failed:", error);
-                document.getElementById('errorText').textContent = `Analysis failed: ${error.message}. Please try a different image.`;
+                // Display user-friendly error
+                document.getElementById('errorText').textContent = `Analysis failed: ${error.message.includes('403') ? 'Permission Denied (API Key Issue)' : error.message}. Please try a different image.`;
                 document.getElementById('errorMessage').classList.remove('hidden');
             } finally {
                 setLoadingState(false);
