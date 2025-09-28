@@ -34,8 +34,8 @@
             }
         }
         .h-full-screen {
-             /* Fallback for better desktop presentation */
-             min-height: 90vh; 
+            /* Fallback for better desktop presentation */
+            min-height: 90vh; 
         }
     </style>
 </head>
@@ -47,7 +47,7 @@
 
         <!-- Header -->
         <header class="text-center mb-6 pt-4 sm:pt-0">
-            <h1 class="text-3xl sm:text-4xl font-extrabold text-green-800">🌿 AI Crop Doctor</h1>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-green-800">🌿AI Crop Doctor</h1>
             <p class="text-lg text-green-600 mt-1">Capture a leaf for instant diagnosis.</p>
         </header>
 
@@ -63,6 +63,7 @@
                     <!-- Added capture="environment" to launch the back camera directly -->
                     <input type="file" id="leafFileInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="previewImage(event)" capture="environment">
                     <div class="text-center">
+                        <!-- Camera Icon -->
                         <svg class="mx-auto h-12 w-12 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.218A2 2 0 0110.69 4h2.62a2 2 0 011.664.89l.812 1.218A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -85,7 +86,7 @@
                     <div id="loader" class="hidden inline-block h-5 w-5 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status"></div>
                 </button>
                 
-                 <!-- User ID Display -->
+                <!-- User ID Display -->
                 <p id="userIdDisplay" class="text-xs text-center text-gray-500 pt-2 break-all">
                     User ID: Connecting...
                 </p>
@@ -124,7 +125,7 @@
         </div>
         
         <footer class="text-center text-xs text-gray-400 mt-8 mb-4">
-            Powered by LEXY for image analysis. BLEHHHH!!!
+            AI analysis powered by LEXY HAKHAK.
         </footer>
     </div>
 
@@ -354,7 +355,7 @@
                 return;
             }
 
-            // Sort by timestamp descending (newest first)
+            // Sort by timestamp descending (newest first) - Client-side sorting used to avoid index requirements
             scans.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
 
             const historyHtml = scans.map((scan) => {
@@ -561,7 +562,7 @@
                 }
 
                 // Set global userId and display it
-                userId = auth.currentUser?.uid || 'anonymous';
+                userId = auth.currentUser?.uid || crypto.randomUUID(); // Use randomUUID if no auth
                 document.getElementById('userIdDisplay').textContent = `User ID: ${userId}`;
                 console.log("Firebase initialized. App ID:", appId, "User ID:", userId);
                 
