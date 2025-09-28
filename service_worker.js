@@ -1,68 +1,59 @@
+// Service Worker for caching and offline support
 const CACHE_NAME = 'leaf-scanner-cache-v1';
 const urlsToCache = [
-    './', // Caches the main index.html file
-    'index.html',
-    'https://cdn.tailwindcss.com', // Caches the Tailwind library
-    'https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap', // Caches the font
-    // Include paths to your deployed icon files (e.g., '/icons/leaf-icon-192.png')
+    './index.html',
+    '/', // Cache the root path
+    './manifest.json', // Cache the manifest
+    'https://cdn.tailwindcss.com',
+    'https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap',
+    // Firebase required scripts for initialization/auth/firestore
+    'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js',
+    'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js',
+    'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js'
+    // Note: Placeholder icons like 'placeholder-icon-192.png' are not included 
+    // as we cannot generate the image files themselves.
 ];
 
-// Install event: caches the core app shell files
-self.addEventListener('install', event => {
+// Install event: cache all necessary assets
+self.addEventListener('install', (event) => {
+    // Force the service worker to activate immediately
+    self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then(cache => {
-                console.log('Service Worker: Caching app shell');
+            .then((cache) => {
+                console.log('Service Worker: Cached core assets');
                 return cache.addAll(urlsToCache);
+            })
+            .catch(err => {
+                console.error('Service Worker: Failed to cache assets during install:', err);
             })
     );
 });
 
-// Fetch event: serves content from the cache first, then falls back to network
-self.addEventListener('fetch', event => {
+// Fetch event: serve content from cache first, then fall back to network (Cache-First strategy)
+self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request)
-            .then(response => {
-                // Return cached response if found
+            .then((response) => {
+                // Cache hit - return response
                 if (response) {
                     return response;
                 }
-                
-                // Clone the request/response to allow it to be read once for the cache, and once for the browser.
-                const fetchRequest = event.request.clone();
-
-                return fetch(fetchRequest).then(
-                    response => {
-                        // Check if we received a valid response
-                        if(!response || response.status !== 200 || response.type !== 'basic') {
-                            return response;
-                        }
-
-                        const responseToCache = response.clone();
-
-                        // Cache dynamic assets if they are successful HTTP GET requests
-                        if (event.request.method === 'GET' && !event.request.url.includes('googleapis.com')) {
-                            caches.open(CACHE_NAME)
-                                .then(cache => {
-                                    cache.put(event.request, responseToCache);
-                                });
-                        }
-
-                        return response;
-                    }
-                );
+                // No cache hit - fetch from network
+                return fetch(event.request);
             })
     );
 });
 
 // Activate event: clean up old caches
-self.addEventListener('activate', event => {
+self.addEventListener('activate', (event) => {
     const cacheWhitelist = [CACHE_NAME];
     event.waitUntil(
-        caches.keys().then(cacheNames => {
+        caches.keys().then((cacheNames) => {
             return Promise.all(
-                cacheNames.map(cacheName => {
+                cacheNames.map((cacheName) => {
                     if (cacheWhitelist.indexOf(cacheName) === -1) {
+                        console.log('Service Worker: Deleting old cache:', cacheName);
                         return caches.delete(cacheName);
                     }
                 })
