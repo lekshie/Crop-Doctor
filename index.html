@@ -21,11 +21,20 @@
             font-family: 'Inter', sans-serif;
             background-color: #f7fee7; /* Light green background */
         }
+        /* Ensures the app looks and feels edge-to-edge on mobile devices */
+        @media (max-width: 640px) {
+            #app-container {
+                box-shadow: none !important;
+                border-radius: 0 !important;
+            }
+        }
     </style>
 </head>
-<body class="min-h-screen flex items-start justify-center p-4 sm:p-8">
+<!-- h-screen and p-0 on mobile for edge-to-edge feel -->
+<body class="h-screen flex items-center justify-center bg-f7fee7 p-0 sm:p-8">
 
-    <div id="app-container" class="w-full max-w-5xl bg-white shadow-2xl rounded-xl p-6 sm:p-10 transition-all duration-300">
+    <!-- h-full ensures it fills the viewport vertically on small screens -->
+    <div id="app-container" class="w-full h-full max-w-5xl bg-white shadow-none sm:shadow-2xl sm:rounded-xl p-4 sm:p-10 transition-all duration-300">
 
         <!-- Header -->
         <header class="text-center mb-8">
