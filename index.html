@@ -161,10 +161,22 @@
         let userId = 'anonymous'; 
         let appId = 'default-app-id'; 
 
-        // Global API configuration
+        // ----------------------------------------------------------------------------------
+        // --- API KEY CONFIGURATION (CRITICAL FOR EXTERNAL DEPLOYMENT) ---------------------
+        // ----------------------------------------------------------------------------------
+        // If hosting this file publicly (like on GitHub Pages), you MUST replace the 
+        // placeholder below with your own Gemini API key. 
+        // NOTE: DO NOT commit your actual key to a public repository!
+        const CUSTOM_API_KEY = "AIzaSyDPm4CfbNJfi29KEMS94aBAA9aqDnsUp7c"; 
+        
         const API_MODEL = "gemini-2.5-flash-preview-05-20";
         const API_BASE_URL = `https://generativelanguage.googleapis.com/v1beta/models/${API_MODEL}:generateContent`;
-        const apiKey = ""; // Canvas environment provides this if empty
+        
+        // This logic allows the app to work in the Canvas environment (where it's injected)
+        // or externally (where the user provides the key).
+        const apiKey = (CUSTOM_API_KEY && CUSTOM_API_KEY !== 'AIzaSyDPm4CfbNJfi29KEMS94aBAA9aqDnsUp7c') ? CUSTOM_API_KEY : ""; 
+        // ----------------------------------------------------------------------------------
+
 
         // --- PWA Service Worker Registration ---
         if ('serviceWorker' in navigator) {
@@ -209,10 +221,14 @@
          * @returns {Promise<Object>} - The JSON response body.
          */
         const makeApiCall = async (url, payload, retries = 3, delay = 1000) => {
-            // CRITICAL FIX CHECK: Ensure API key is correctly appended for the Canvas environment.
-            // The canvas runtime will automatically provide the key if the local apiKey variable is empty ("").
+            
+            // CRITICAL FIX CHECK: Use the determined apiKey variable.
             const fetchUrl = url + `?key=${apiKey}`; 
             
+            if (apiKey === "") {
+                throw new Error("API Key is missing. If you are hosting externally (e.g., GitHub Pages), please update the 'CUSTOM_API_KEY' variable in the script.");
+            }
+
             for (let i = 0; i < retries; i++) {
                 try {
                     const response = await fetch(fetchUrl, {
@@ -223,7 +239,7 @@
 
                     if (response.status === 403) {
                          // Explicitly check for 403 and provide an accurate error message
-                        throw new Error("403 Permission Denied. This means the API key is invalid or unauthorized by the environment. The issue is external to the application code.");
+                        throw new Error("403 Permission Denied. The API key may be invalid or unauthorized. Please check your key.");
                     }
 
                     if (response.status === 429 && i < retries - 1) {
@@ -558,28 +574,30 @@
 
                 if (Object.keys(firebaseConfig).length === 0) {
                     console.error("Firebase config is missing.");
-                    return;
-                }
-
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                // Authenticate
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
+                    // Continue without Firebase if config is missing, but log error
                 } else {
-                    await signInAnonymously(auth);
-                }
+                    app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
 
-                // Set global userId and display it
-                // We use crypto.randomUUID() only if auth.currentUser?.uid is null AND __initial_auth_token was not provided.
-                userId = auth.currentUser?.uid || (initialAuthToken ? 'anonymous-auth-fail' : crypto.randomUUID());
+                    // Authenticate
+                    if (initialAuthToken) {
+                        await signInWithCustomToken(auth, initialAuthToken);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+
+                    // Set global userId and display it
+                    // We use crypto.randomUUID() only if auth.currentUser?.uid is null AND __initial_auth_token was not provided.
+                    userId = auth.currentUser?.uid || (initialAuthToken ? 'anonymous-auth-fail' : crypto.randomUUID());
+                    
+                    // Load the history once authenticated
+                    loadScanHistory();
+                }
+                
                 document.getElementById('userIdDisplay').textContent = `User ID: ${userId}`;
                 console.log("Firebase initialized. App ID:", appId, "User ID:", userId);
-                
-                // Load the history once authenticated
-                loadScanHistory();
+
 
             } catch (e) {
                 console.error("Firebase initialization or authentication failed:", e);
