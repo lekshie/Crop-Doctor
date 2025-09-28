@@ -39,7 +39,7 @@
         <!-- Header -->
         <header class="text-center mb-8">
             <h1 class="text-3xl sm:text-4xl font-extrabold text-green-800">🌿AI Crop Doctor</h1>
-            <p class="text-lg text-green-600 mt-2">Use your camera for instant plant diagnosis.</p>
+            <p class="text-lg text-green-600 mt-2">Use your camera for instant plant diagnosis. [hindi ko to binili(lexy)]</p>
         </header>
 
         <!-- Main Content Grid -->
@@ -189,7 +189,11 @@
         const makeApiCall = async (url, payload, retries = 3, delay = 1000) => {
             for (let i = 0; i < retries; i++) {
                 try {
-                    const response = await fetch(url + `?key=${apiKey}`, {
+                    // FIX: If apiKey is empty (as expected in Canvas), just use the base URL.
+                    // The Canvas environment automatically handles API key injection for the base URL.
+                    const fetchUrl = apiKey ? `${url}?key=${apiKey}` : url; 
+                    
+                    const response = await fetch(fetchUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
